@@ -1,0 +1,19 @@
+{
+  "name": "pulsecheck-backend",
+  "version": "1.0.0",
+  "description": "PulseCheck — live service status monitoring backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["monitoring", "status", "pulsecheck"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

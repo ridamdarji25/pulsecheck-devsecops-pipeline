@@ -1,0 +1,80 @@
+/* index.css — PulseCheck global styles
+ *
+ * Krowd-inspired design system:
+ *   - Clean off-white/sage green background
+ *   - White cards, minimal shadows
+ *   - Dark editorial typography
+ *   - Orange accent (like Krowd's brand)
+ *   - Professional, non-AI-ish feel
+ */
+
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+/* ── Design tokens ──────────────────────────────────── */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg:          #eef0eb;   /* sage-tinted off-white — matches Krowd */
+  --color-surface:     #ffffff;   /* card / panel background */
+  --color-surface-alt: #f7f8f5;   /* subtle alternate surface */
+  --color-border:      #e2e4dd;   /* very light divider */
+  --color-border-dark: #c8cbbf;   /* slightly stronger divider */
+
+  --color-text-primary:   #1a1a1a;   /* near-black headings */
+  --color-text-secondary: #555750;   /* body / muted */
+  --color-text-muted:     #8d9086;   /* labels, metadata */
+
+  --color-accent:        #d4622a;   /* Krowd-style orange accent */
+  --color-accent-light:  #f5ddd1;   /* orange tint for backgrounds */
+
+  --color-up:        #16a34a;   /* green-700 */
+  --color-up-bg:     #dcfce7;   /* green-100 */
+  --color-slow:      #b45309;   /* amber-700 */
+  --color-slow-bg:   #fef3c7;   /* amber-100 */
+  --color-down:      #dc2626;   /* red-600 */
+  --color-down-bg:   #fee2e2;   /* red-100 */
+}
+
+/* ── Base resets ──────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border-dark); border-radius: 3px; }
+
+/* ── Modal overlay animation ──────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes dotPing {
+  75%, 100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

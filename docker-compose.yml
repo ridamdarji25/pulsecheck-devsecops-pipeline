@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pulsecheck-backend
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      FRONTEND_ORIGIN: http://localhost:8081
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - pulsecheck-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3001
+    container_name: pulsecheck-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+    networks:
+      - pulsecheck-network
+
+networks:
+  pulsecheck-network:
+    driver: bridge
