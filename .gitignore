@@ -44,3 +44,8 @@ Thumbs.db
 
 # Misc
 *.swp
+
+#Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
