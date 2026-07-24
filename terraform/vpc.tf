@@ -9,6 +9,8 @@ module "vpc" {
   private_subnets = [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 4, k)]
   public_subnets  = [for k, v in var.azs : cidrsubnet(var.vpc_cidr, 4, k + 4)]
 
+  map_public_ip_on_launch = true
+
   enable_nat_gateway     = true
   single_nat_gateway     = true
   one_nat_gateway_per_az = false

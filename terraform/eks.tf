@@ -20,6 +20,7 @@ module "eks" {
       min_size     = var.node_min_size
       max_size     = var.node_max_size
       desired_size = var.node_desired_size
+      subnet_ids = module.vpc.public_subnets
 
       labels = {
         role = "general"
