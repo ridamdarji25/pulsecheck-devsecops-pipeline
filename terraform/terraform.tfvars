@@ -1,0 +1,11 @@
+aws_region          = "ap-south-1"
+project_name        = "pulsecheck"
+environment         = "dev"
+vpc_cidr            = "10.0.0.0/16"
+azs                 = ["ap-south-1a", "ap-south-1b"]
+cluster_name        = "pulsecheck-eks"
+cluster_version     = "1.30"
+node_instance_type  = "m7i-flex.large"
+node_desired_size   = 2
+node_min_size       = 1
+node_max_size       = 3
