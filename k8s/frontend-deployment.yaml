@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsecheck-frontend
+  namespace: pulsecheck
+  labels:
+    app: pulsecheck-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pulsecheck-frontend
+  template:
+    metadata:
+      labels:
+        app: pulsecheck-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: <dockerhub-username>/pulsecheck-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3

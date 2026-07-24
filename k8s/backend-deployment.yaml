@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsecheck-backend
+  namespace: pulsecheck
+  labels:
+    app: pulsecheck-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pulsecheck-backend
+  template:
+    metadata:
+      labels:
+        app: pulsecheck-backend
+    spec:
+      containers:
+        - name: backend
+          image: riamtech/pulsecheck-backend:latest
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: pulsecheck-config
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3

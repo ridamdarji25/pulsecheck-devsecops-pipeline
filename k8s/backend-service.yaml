@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsecheck-backend-svc
+  namespace: pulsecheck
+spec:
+  type: ClusterIP
+  selector:
+    app: pulsecheck-backend
+  ports:
+    - port: 3001
+      targetPort: 3001

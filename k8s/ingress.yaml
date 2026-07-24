@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pulsecheck-ingress
+  namespace: pulsecheck
+  annotations:
+    # Regex capture group ($2) strips the /api prefix before forwarding
+    # to the backend — backend routes are mounted at root (e.g. /status,
+    # /health), not under /api, so this prefix stripping is required
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          # Anything starting with /api goes to backend, prefix stripped
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pulsecheck-backend-svc
+                port:
+                  number: 3001
+          # Everything else goes to frontend, unchanged
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pulsecheck-frontend-svc
+                port:
+                  number: 80

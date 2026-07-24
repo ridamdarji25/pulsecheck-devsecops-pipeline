@@ -1,51 +1,46 @@
-# Dependencies
+# ── Dependencies ──────────────────────────────
 **/node_modules/
 
-# Environment variables
+# ── Environment Variables ─────────────────────
 **/.env
 **/.env.*
 
-# Logs
+# ── Logs ──────────────────────────────────────
 *.log
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
-# Build folders
-dist/
-build/
+# ── Build Output ──────────────────────────────
+**/dist/
+**/build/
+**/coverage/
 
-# Coverage
-coverage/
+# ── Cache ─────────────────────────────────────
+**/.cache/
+**/.parcel-cache/
+**/.eslintcache
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# VS Code
-.vscode/
-
-# Runtime files
+# ── Runtime ───────────────────────────────────
 *.pid
 *.seed
 
-# Cache
-.cache/
-.parcel-cache/
-.eslintcache
-
-# Terraform (if added later)
-.terraform/
+# ── Terraform ─────────────────────────────────
+**/.terraform/
 *.tfstate
 *.tfstate.*
 
-# Docker
+# ── Docker ────────────────────────────────────
 *.tar
 
-# Misc
-*.swp
+# ── CI / Security Scan Reports ────────────────
+trivy-fs-report.txt
+trivy-backend-image.txt
+trivy-frontend-image.txt
+**/dependency-check-report.*
 
-#Terraform
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.backup
+# ── OS / Editor ───────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
