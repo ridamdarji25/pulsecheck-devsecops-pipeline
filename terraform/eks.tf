@@ -1,16 +1,29 @@
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
 
   name               = var.cluster_name
   kubernetes_version = var.cluster_version
 
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  subnet_ids = module.vpc.public_subnets
 
   enable_cluster_creator_admin_permissions = true
 
   endpoint_public_access  = true
   endpoint_private_access = true
+
+  cluster_addons = {
+    vpc-cni = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    coredns = {
+      most_recent = true
+    }
+  }
 
   eks_managed_node_groups = {
     default = {
@@ -19,6 +32,7 @@ module "eks" {
       min_size     = var.node_min_size
       max_size     = var.node_max_size
       desired_size = var.node_desired_size
+
       subnet_ids = module.vpc.public_subnets
 
       labels = {
