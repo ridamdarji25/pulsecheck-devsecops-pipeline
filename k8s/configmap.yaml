@@ -6,6 +6,5 @@ metadata:
 data:
   NODE_ENV: "production"
   PORT: "3001"
-  # Ingress ka LoadBalancer URL milne ke baad isko update karna —
-  # abhi placeholder hai, CORS errors aayenge jab tak sahi na ho
-  FRONTEND_ORIGIN: "http://placeholder-update-after-ingress-ready"
+  ##just for now
+  FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: <dockerhub-username>/pulsecheck-frontend:latest
+          image: riamtech/pulsecheck-frontend:latest
           ports:
             - containerPort: 80
           resources:
