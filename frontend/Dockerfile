@@ -20,6 +20,9 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+COPY 40-set-resolver.sh /docker-entrypoint.d/40-set-resolver.sh
+RUN chmod +x /docker-entrypoint.d/40-set-resolver.sh
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
