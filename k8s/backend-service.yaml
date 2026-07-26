@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pulsecheck-backend-svc
+  name: backend
   namespace: pulsecheck
 spec:
   type: ClusterIP

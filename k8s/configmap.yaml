@@ -6,5 +6,3 @@ metadata:
 data:
   NODE_ENV: "production"
   PORT: "3001"
-  ##just for now
-  FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
