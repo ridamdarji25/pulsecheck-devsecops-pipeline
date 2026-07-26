@@ -31,7 +31,7 @@ pipeline {
 
         stage('Install Backend Dependencies') {
             steps {
-                dir('pulsecheck-app/backend') {
+                dir('backend') {
                     sh 'npm install --legacy-peer-deps'
                 }
             }
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Install Frontend Dependencies') {
             steps {
-                dir('pulsecheck-app/frontend') {
+                dir('frontend') {
                     sh 'npm install --legacy-peer-deps'
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
                         \$SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectName=pulsecheck \
                         -Dsonar.projectKey=pulsecheck \
-                        -Dsonar.sources=pulsecheck-app/frontend/src,pulsecheck-app/backend || true
+                        -Dsonar.sources=frontend/src,backend || true
                     """
                 }
             }
@@ -81,7 +81,7 @@ pipeline {
 
         stage('Build Backend Docker Image') {
             steps {
-                dir('pulsecheck-app/backend') {
+                dir('backend') {
                     sh "docker build -t ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER} ."
                 }
             }
@@ -89,7 +89,7 @@ pipeline {
 
         stage('Build Frontend Docker Image') {
             steps {
-                dir('pulsecheck-app/frontend') {
+                dir('frontend') {
                     sh """
                         docker build \
                         --build-arg VITE_API_BASE_URL=${VITE_API_BASE_URL} \
@@ -126,13 +126,13 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                     sh """
-                        sed -i "s|image: .*pulsecheck-backend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}|g" pulsecheck-app/k8s/backend-deployment.yaml
-                        sed -i "s|image: .*pulsecheck-frontend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}|g" pulsecheck-app/k8s/frontend-deployment.yaml
+                        sed -i "s|image: .*pulsecheck-backend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}|g" k8s/backend-deployment.yaml
+                        sed -i "s|image: .*pulsecheck-frontend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}|g" k8s/frontend-deployment.yaml
 
                         git config user.email "jenkins@pulsecheck.local"
                         git config user.name "jenkins-ci"
 
-                        git add pulsecheck-app/k8s/backend-deployment.yaml pulsecheck-app/k8s/frontend-deployment.yaml
+                        git add k8s/backend-deployment.yaml k8s/frontend-deployment.yaml
                         git commit -m "CI: update image tags to build ${BUILD_NUMBER}" || echo "No changes to commit"
 
                         git push https://\${GIT_USER}:\${GIT_TOKEN}@github.com/ridamdarji25/pulsecheck-devsecops-pipeline.git main
