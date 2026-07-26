@@ -32,20 +32,12 @@ pipeline {
         stage('Docker Cleanup') {
             steps {
                 sh '''
-                    echo "Cleaning old application containers..."
-                    docker rm -f pulsecheck-backend || true
-                    docker rm -f pulsecheck-frontend || true
-
-                    echo "Removing old application images..."
+                    docker rm -f backend || true
+                    docker rm -f frontend || true
                     docker rmi ${DOCKER_CREDS_USR}/pulsecheck-backend:latest || true
                     docker rmi ${DOCKER_CREDS_USR}/pulsecheck-frontend:latest || true
-
                     docker image prune -f || true
                 '''
-                // Note: this only ever touches pulsecheck-backend/frontend
-                // containers and images by name — sonar container, its
-                // image, volume, and network are never referenced here,
-                // so they're untouched by design.
             }
         }
 
@@ -141,7 +133,6 @@ pipeline {
                     withDockerRegistry(credentialsId: 'docker', url: 'https://index.docker.io/v1/') {
                         sh "docker push ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}"
                         sh "docker push ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}"
-
                         sh "docker tag ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER} ${DOCKER_CREDS_USR}/pulsecheck-backend:latest"
                         sh "docker tag ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER} ${DOCKER_CREDS_USR}/pulsecheck-frontend:latest"
                         sh "docker push ${DOCKER_CREDS_USR}/pulsecheck-backend:latest"
@@ -154,13 +145,8 @@ pipeline {
         stage('Run Backend Container') {
             steps {
                 sh '''
-                    docker rm -f pulsecheck-backend || true
-
-                    docker run -d \
-                    --name pulsecheck-backend \
-                    --network pulsecheck-network \
-                    -p 3001:3001 \
-                    ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}
+                    docker rm -f backend || true
+                    docker run -d --name backend --network pulsecheck-network -p 3001:3001 ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}
                 '''
             }
         }
@@ -168,13 +154,8 @@ pipeline {
         stage('Run Frontend Container') {
             steps {
                 sh '''
-                    docker rm -f pulsecheck-frontend || true
-
-                    docker run -d \
-                    --name pulsecheck-frontend \
-                    --network pulsecheck-network \
-                    -p 80:80 \
-                    ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}
+                    docker rm -f frontend || true
+                    docker run -d --name frontend --network pulsecheck-network -p 80:80 ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}
                 '''
             }
         }
@@ -185,13 +166,10 @@ pipeline {
                     sh """
                         sed -i "s|image: .*pulsecheck-backend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}|g" k8s/backend-deployment.yaml
                         sed -i "s|image: .*pulsecheck-frontend:.*|image: ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}|g" k8s/frontend-deployment.yaml
-
                         git config user.email "jenkins@pulsecheck.local"
                         git config user.name "jenkins-ci"
-
                         git add k8s/backend-deployment.yaml k8s/frontend-deployment.yaml
                         git commit -m "CI: update image tags to build ${BUILD_NUMBER}" || echo "No changes to commit"
-
                         git push https://\${GIT_USER}:\${GIT_TOKEN}@github.com/ridamdarji25/pulsecheck-devsecops-pipeline.git main
                     """
                 }
@@ -201,23 +179,10 @@ pipeline {
 
     post {
         always {
-            // -a here removes ALL dangling + unused images (not just this
-            // build's), but never touches running containers — sonar and
-            // the freshly-started app containers stay untouched since
-            // prune only targets images with no container using them
             sh 'docker image prune -af || true'
-
             emailext attachLog: true,
                 subject: "Build '${currentBuild.result}' - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    <html><body>
-                        <div style="background-color:#87CEEB;padding:10px;margin-bottom:10px;">
-                            <p style="color:white;font-weight:bold;">Project: ${env.JOB_NAME}</p>
-                            <p style="color:white;font-weight:bold;">Build: #${env.BUILD_NUMBER}</p>
-                            <p style="color:white;font-weight:bold;">URL: ${env.BUILD_URL}</p>
-                        </div>
-                    </body></html>
-                """,
+                body: "<html><body><p>Project: ${env.JOB_NAME}</p><p>Build: #${env.BUILD_NUMBER}</p><p>URL: ${env.BUILD_URL}</p></body></html>",
                 to: 'ridamdarji2729@gmail.com',
                 mimeType: 'text/html',
                 attachmentsPattern: 'trivy-fs-report.txt,trivy-backend-image.txt,trivy-frontend-image.txt'
