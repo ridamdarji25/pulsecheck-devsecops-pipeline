@@ -24,8 +24,37 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 git branch: 'main',
-                credentialsId: 'github-creds',
-                url: 'https://github.com/ridamdarji25/pulsecheck-devsecops-pipeline.git'
+                    credentialsId: 'github-creds',
+                    url: 'https://github.com/ridamdarji25/pulsecheck-devsecops-pipeline.git'
+            }
+        }
+
+        stage('Docker Cleanup') {
+            steps {
+                sh '''
+                    echo "Cleaning old application containers..."
+                    docker rm -f pulsecheck-backend || true
+                    docker rm -f pulsecheck-frontend || true
+
+                    echo "Removing old application images..."
+                    docker rmi ${DOCKER_CREDS_USR}/pulsecheck-backend:latest || true
+                    docker rmi ${DOCKER_CREDS_USR}/pulsecheck-frontend:latest || true
+
+                    docker image prune -f || true
+                '''
+                // Note: this only ever touches pulsecheck-backend/frontend
+                // containers and images by name — sonar container, its
+                // image, volume, and network are never referenced here,
+                // so they're untouched by design.
+            }
+        }
+
+        stage('Create Docker Network') {
+            steps {
+                sh '''
+                    docker network inspect pulsecheck-network >/dev/null 2>&1 || \
+                    docker network create pulsecheck-network
+                '''
             }
         }
 
@@ -50,9 +79,9 @@ pipeline {
                 withSonarQubeEnv('sonar-server') {
                     sh """
                         \$SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=pulsecheck \
-                        -Dsonar.projectKey=pulsecheck \
-                        -Dsonar.sources=frontend/src,backend || true
+                        -Dsonar.projectName=PulseCheck \
+                        -Dsonar.projectKey=PulseCheck \
+                        -Dsonar.sources=frontend/src,backend
                     """
                 }
             }
@@ -60,8 +89,8 @@ pipeline {
 
         stage('Code Quality Gate') {
             steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: false
                 }
             }
         }
@@ -122,6 +151,34 @@ pipeline {
             }
         }
 
+        stage('Run Backend Container') {
+            steps {
+                sh '''
+                    docker rm -f pulsecheck-backend || true
+
+                    docker run -d \
+                    --name pulsecheck-backend \
+                    --network pulsecheck-network \
+                    -p 3001:3001 \
+                    ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER}
+                '''
+            }
+        }
+
+        stage('Run Frontend Container') {
+            steps {
+                sh '''
+                    docker rm -f pulsecheck-frontend || true
+
+                    docker run -d \
+                    --name pulsecheck-frontend \
+                    --network pulsecheck-network \
+                    -p 5173:80 \
+                    ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}
+                '''
+            }
+        }
+
         stage('Update K8s Manifests (GitOps)') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
@@ -144,11 +201,12 @@ pipeline {
 
     post {
         always {
-            sh """
-                docker rmi ${DOCKER_CREDS_USR}/pulsecheck-backend:${BUILD_NUMBER} || true
-                docker rmi ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER} || true
-                docker image prune -f || true
-            """
+            // -a here removes ALL dangling + unused images (not just this
+            // build's), but never touches running containers — sonar and
+            // the freshly-started app containers stay untouched since
+            // prune only targets images with no container using them
+            sh 'docker image prune -af || true'
+
             emailext attachLog: true,
                 subject: "Build '${currentBuild.result}' - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
