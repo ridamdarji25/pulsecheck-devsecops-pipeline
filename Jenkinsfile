@@ -23,7 +23,9 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                checkout scm
+                git branch: 'main',
+                credentialsId: 'github-creds',
+                url: 'https://github.com/ridamdarji25/pulsecheck-devsecops-pipeline.git'
             }
         }
 
