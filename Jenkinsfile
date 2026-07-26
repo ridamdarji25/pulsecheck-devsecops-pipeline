@@ -173,7 +173,7 @@ pipeline {
                     docker run -d \
                     --name pulsecheck-frontend \
                     --network pulsecheck-network \
-                    -p 5173:80 \
+                    -p 80:80 \
                     ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER}
                 '''
             }
