@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN || "http://localhost:8081",
+    origin: "*",
     methods: ["GET"],
     credentials: false,
   })

@@ -10,7 +10,6 @@ pipeline {
         SCANNER_HOME      = tool 'sonar-scanner'
         DOCKER_CREDS      = credentials('docker')
         NVD_API_KEY       = credentials('nvd-api-key')
-        VITE_API_BASE_URL = 'http://localhost:3001'
     }
 
     stages {
@@ -111,11 +110,7 @@ pipeline {
         stage('Build Frontend Docker Image') {
             steps {
                 dir('frontend') {
-                    sh """
-                        docker build \
-                        --build-arg VITE_API_BASE_URL=${VITE_API_BASE_URL} \
-                        -t ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER} .
-                    """
+                    sh "docker build -t ${DOCKER_CREDS_USR}/pulsecheck-frontend:${BUILD_NUMBER} ."
                 }
             }
         }
