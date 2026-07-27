@@ -6,3 +6,4 @@ metadata:
 data:
   NODE_ENV: "production"
   PORT: "3001"
+#  FRONTEND_ORIGIN: "<your-loadbalancer-url"

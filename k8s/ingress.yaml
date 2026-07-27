@@ -3,26 +3,20 @@ kind: Ingress
 metadata:
   name: pulsecheck-ingress
   namespace: pulsecheck
-  annotations:
-    # Preserve /api prefix when forwarding to backend
-    # backend routes are mounted at /api (e.g. /api/status, /api/ping)
-    nginx.ingress.kubernetes.io/rewrite-target: /api/$2
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
-          # /api/* → backend service (prefix preserved)
-          - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api
+            pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
                   number: 3001
-          # Everything else → frontend service
-          - path: /()(.*) 
-            pathType: ImplementationSpecific
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: pulsecheck-frontend-svc
