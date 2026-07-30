@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: riamtech/pulsecheck-backend:39
+          image: riamtech/pulsecheck-backend:40
           ports:
             - containerPort: 3001
           envFrom:
