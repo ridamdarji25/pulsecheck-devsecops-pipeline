@@ -1,5 +1,3 @@
-// TopBar.jsx — Clean Krowd-style navigation bar with live clock
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
@@ -42,9 +40,7 @@ export default function TopBar({ onAddApp }) {
         gap: '1rem',
       }}>
 
-        {/* ── Logo ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-          {/* ECG icon */}
           <div style={{
             width: '28px', height: '28px',
             borderRadius: '6px',
@@ -66,7 +62,6 @@ export default function TopBar({ onAddApp }) {
           </span>
         </div>
 
-        {/* ── Centre tag ── */}
         <div style={{
           fontSize: '0.72rem',
           fontWeight: 500,
@@ -77,9 +72,7 @@ export default function TopBar({ onAddApp }) {
           / Live Status Dashboard
         </div>
 
-        {/* ── Right side ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexShrink: 0 }}>
-          {/* Live clock */}
           <span style={{
             fontSize: '0.82rem',
             fontWeight: 600,
@@ -90,7 +83,6 @@ export default function TopBar({ onAddApp }) {
             {formatted}
           </span>
 
-          {/* Add Application button — Krowd-style "Get started" pill */}
           <button
             onClick={onAddApp}
             id="add-app-btn"

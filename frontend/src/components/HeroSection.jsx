@@ -1,5 +1,3 @@
-// HeroSection.jsx — Krowd-style hero with section label, bold headline, stat pills
-
 import { motion } from 'framer-motion';
 
 export default function HeroSection({ services, lastUpdated, isLoading }) {
@@ -39,7 +37,6 @@ export default function HeroSection({ services, lastUpdated, isLoading }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        {/* ── / SECTION LABEL ── Krowd-style */}
         <div style={{
           fontSize: '0.72rem',
           fontWeight: 600,
@@ -51,7 +48,6 @@ export default function HeroSection({ services, lastUpdated, isLoading }) {
           / Status Dashboard
         </div>
 
-        {/* ── Main headline ── */}
         <h1 style={{
           fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
           fontWeight: 800,
@@ -74,7 +70,6 @@ export default function HeroSection({ services, lastUpdated, isLoading }) {
           Auto-refreshes every&nbsp;15&nbsp;seconds.
         </p>
 
-        {/* ── Stats row ── */}
         {!isLoading && total > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -87,7 +82,6 @@ export default function HeroSection({ services, lastUpdated, isLoading }) {
               gap: '0.75rem',
             }}
           >
-            {/* Overall status badge */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -110,15 +104,12 @@ export default function HeroSection({ services, lastUpdated, isLoading }) {
               {overallLabel}
             </div>
 
-            {/* Stat pills */}
             <StatPill count={upCount}   label="Operational" color="#16a34a" bg="#dcfce7" />
             <StatPill count={slowCount} label="Degraded"    color="#b45309" bg="#fef3c7" />
             <StatPill count={downCount} label="Down"        color="#dc2626" bg="#fee2e2" />
 
-            {/* Divider */}
             <span style={{ color: '#c8cbbf', fontSize: '0.9rem' }}>·</span>
 
-            {/* Last updated */}
             <span style={{
               fontSize: '0.75rem',
               color: '#8d9086',

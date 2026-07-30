@@ -1,13 +1,3 @@
-// StatusCard.jsx — Clean Krowd-style white card for a single service
-//
-// Key fixes over the previous version:
-//   1. The card is a CSS Grid/Flex column with min-width:0 on text containers,
-//      so long URLs are properly truncated instead of overflowing the card.
-//   2. Status badge uses flex-shrink:0 so it never wraps.
-//   3. Card height is determined by its own content (not a fixed value),
-//      making the grid truly dynamic for any service name length.
-//   4. Custom services have a trash/remove icon if `onRemove` is passed.
-
 import { motion } from 'framer-motion';
 
 const STATUS_CONFIG = {
@@ -41,14 +31,12 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
     ? `${service.latencyMs} ms`
     : service.status === 'down' ? '— ms' : '0 ms';
 
-  // Bar represents 0-1500 ms range; cap at 100%.
   const barPct = Math.min((service.latencyMs / 1500) * 100, 100);
   const barColor =
     service.latencyMs < 500 ? '#16a34a'
     : service.latencyMs < 900 ? '#f59e0b'
     : '#ef4444';
 
-  // Clean the URL for display: strip https:// and trailing slash
   const displayUrl = service.url
     .replace(/^https?:\/\//, '')
     .replace(/\/$/, '');
@@ -68,17 +56,12 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
         cursor: 'default',
         position: 'relative',
-        // CRITICAL: do NOT set overflow:hidden on the card itself —
-        // it was causing child text to be cut. Instead, control overflow
-        // precisely on individual text nodes.
         display: 'flex',
         flexDirection: 'column',
         gap: '1rem',
-        // min-width:0 ensures this flex child can shrink below its content size
         minWidth: 0,
       }}
     >
-      {/* ── Custom badge + remove button ── */}
       {isCustom && (
         <div style={{
           position: 'absolute',
@@ -125,17 +108,14 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
         </button>
       )}
 
-      {/* ── Header: name + status badge ── */}
       <div style={{
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         gap: '0.75rem',
-        // Ensure this row itself can shrink; critical for text truncation to work.
         minWidth: 0,
         paddingRight: onRemove ? '1.75rem' : 0,
       }}>
-        {/* Service name + URL — wrapped in a flex child with min-width:0 */}
         <div style={{ minWidth: 0, flex: 1 }}>
           <h2 style={{
             fontSize: '0.95rem',
@@ -143,8 +123,6 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
             color: '#1a1a1a',
             letterSpacing: '-0.02em',
             marginBottom: '0.2rem',
-            // Prevent the name from overflowing; use word-break so very long
-            // single words wrap rather than bursting the card width.
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
           }}>
@@ -154,19 +132,15 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
             fontSize: '0.68rem',
             color: '#8d9086',
             fontFamily: 'ui-monospace, monospace',
-            // Truncate with ellipsis — requires overflow + white-space + max-width.
-            // The parent must have min-width:0 for this to work in flexbox.
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            // Width is constrained by the parent flex container, not a fixed px.
             maxWidth: '100%',
           }}>
             {displayUrl}
           </p>
         </div>
 
-        {/* Status badge — fixed size, never shrinks */}
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -178,7 +152,6 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
           flexShrink: 0,
           whiteSpace: 'nowrap',
         }}>
-          {/* Pulsing dot */}
           <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
             {cfg.pulse && (
               <span style={{
@@ -207,7 +180,6 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
         </div>
       </div>
 
-      {/* ── Latency section ── */}
       <div>
         <div style={{
           display: 'flex',
@@ -237,7 +209,6 @@ export default function StatusCard({ service, index, onRemove, isCustom }) {
           </span>
         </div>
 
-        {/* Latency bar */}
         <div style={{
           height: '3px',
           borderRadius: '2px',

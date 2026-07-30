@@ -1,20 +1,3 @@
-// App.jsx — Root component for PulseCheck
-//
-// State managed here:
-//   services       — built-in service statuses from /api/status
-//   customServices — statuses for user-added applications (from /api/ping)
-//   customApps     — the user's list of { name, url } (persisted in localStorage)
-//   isLoading      — true only before first successful fetch
-//   error          — last API error (shown in StatusGrid)
-//   lastUpdated    — Date of last successful poll
-//   modalOpen      — whether the Add Service modal is visible
-//
-// WHY localStorage for custom apps?
-//   Keeps the backend stateless — no DB needed for a dashboard of this scope.
-//   localStorage survives page refreshes and browser restarts. If we later
-//   want multi-device sync, replacing this with a backend store is easy
-//   without touching any other component.
-
 import { useState, useEffect, useCallback } from 'react';
 import { fetchStatus, pingCustomService } from './api';
 import TopBar from './components/TopBar';
@@ -23,9 +6,8 @@ import StatusGrid from './components/StatusGrid';
 import AddAppModal from './components/AddAppModal';
 
 const POLL_INTERVAL_MS = 15_000;
-const STORAGE_KEY = 'pulsecheck_custom_apps'; // localStorage key
+const STORAGE_KEY = 'pulsecheck_custom_apps';
 
-// Read persisted custom apps on module load (safe: returns [] on first run).
 function loadStoredApps() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -37,14 +19,13 @@ function loadStoredApps() {
 
 export default function App() {
   const [services,        setServices]        = useState([]);
-  const [customApps,      setCustomApps]      = useState(loadStoredApps); // { name, url }[]
-  const [customServices,  setCustomServices]  = useState([]);              // { name, url, status, latencyMs }[]
+  const [customApps,      setCustomApps]      = useState(loadStoredApps);
+  const [customServices,  setCustomServices]  = useState([]);
   const [isLoading,       setIsLoading]       = useState(true);
   const [error,           setError]           = useState(null);
   const [lastUpdated,     setLastUpdated]     = useState(null);
   const [modalOpen,       setModalOpen]       = useState(false);
 
-  // ── Built-in polling ───────────────────────────────────────────────────────
   const loadStatuses = useCallback(async () => {
     try {
       const data = await fetchStatus();
@@ -64,9 +45,6 @@ export default function App() {
     return () => clearInterval(id);
   }, [loadStatuses]);
 
-  // ── Custom apps polling ────────────────────────────────────────────────────
-  // When `customApps` changes (add/remove), re-poll immediately.
-  // Also runs on the same 15 s interval.
   const loadCustomStatuses = useCallback(async (apps) => {
     if (!apps.length) { setCustomServices([]); return; }
     const results = await Promise.allSettled(
@@ -86,36 +64,20 @@ export default function App() {
     return () => clearInterval(id);
   }, [customApps, loadCustomStatuses]);
 
-  // ── Custom apps CRUD ───────────────────────────────────────────────────────
-
-  /**
-   * handleAddApp — called by AddAppModal on form submit.
-   *
-   * We ping the URL once immediately (to show the user a result right away)
-   * then persist it so it joins the polling cycle.
-   */
   const handleAddApp = useCallback(async (name, url) => {
-    // Prevent duplicate names.
     const exists = customApps.some(
       a => a.name.toLowerCase() === name.toLowerCase() || a.url === url
     );
     if (exists) throw new Error(`"${name}" is already being monitored.`);
 
-    // Ping once to validate the URL is reachable (shows meaningful error in modal).
     const status = await pingCustomService(name, url);
-    // status.status may be 'down' (unreachable) — we still add it so the user
-    // can see the outage, but we don't throw.
 
     const updated = [...customApps, { name, url }];
     setCustomApps(updated);
     setCustomServices(prev => [...prev, status]);
-    // Persist to localStorage.
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }, [customApps]);
 
-  /**
-   * handleRemoveApp — removes a custom app by name.
-   */
   const handleRemoveApp = useCallback((name) => {
     const updated = customApps.filter(a => a.name !== name);
     setCustomApps(updated);
@@ -123,7 +85,6 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }, [customApps]);
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   const allServices = [...services, ...customServices];
 
   return (
@@ -147,7 +108,6 @@ export default function App() {
         />
       </main>
 
-      {/* Footer — Krowd-style minimal */}
       <footer style={{
         borderTop: '1px solid #e2e4dd',
         backgroundColor: '#ffffff',
@@ -166,7 +126,6 @@ export default function App() {
         </span>
       </footer>
 
-      {/* Add Service modal */}
       <AddAppModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

@@ -1,9 +1,3 @@
-// AddAppModal.jsx — Modal dialog to add a custom application to monitor
-//
-// Design: Krowd-style clean white modal with minimal form.
-// The modal manages its own form state and calls onAdd(name, url) on submit.
-// It validates the URL (must start with http/https) before submitting.
-
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,19 +8,16 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
   const [loading, setLoading] = useState(false);
   const nameRef = useRef(null);
 
-  // Reset form and auto-focus the name field whenever the modal opens.
   useEffect(() => {
     if (isOpen) {
       setName('');
       setUrl('');
       setError('');
       setLoading(false);
-      // Small delay to let the animation start before focusing.
       setTimeout(() => nameRef.current?.focus(), 120);
     }
   }, [isOpen]);
 
-  // Close on Escape key.
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) window.addEventListener('keydown', handler);
@@ -68,7 +59,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* ── Backdrop ── */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -85,7 +75,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
             }}
           />
 
-          {/* ── Modal panel ── */}
           <motion.div
             key="modal"
             initial={{ opacity: 0, y: 20, scale: 0.97 }}
@@ -110,7 +99,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
               boxShadow: '0 20px 60px -10px rgba(0,0,0,0.2)',
               overflow: 'hidden',
             }}>
-              {/* ── Modal header ── */}
               <div style={{
                 padding: '1.5rem 1.75rem 1.25rem',
                 borderBottom: '1px solid #e2e4dd',
@@ -171,9 +159,7 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
                 </button>
               </div>
 
-              {/* ── Form ── */}
               <form onSubmit={handleSubmit} style={{ padding: '1.5rem 1.75rem' }}>
-                {/* Service Name */}
                 <div style={{ marginBottom: '1rem' }}>
                   <label style={labelStyle} htmlFor="svc-name">Service name</label>
                   <input
@@ -189,7 +175,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
                   />
                 </div>
 
-                {/* URL */}
                 <div style={{ marginBottom: '1.25rem' }}>
                   <label style={labelStyle} htmlFor="svc-url">Endpoint URL</label>
                   <input
@@ -211,7 +196,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
                   </p>
                 </div>
 
-                {/* Error message */}
                 {error && (
                   <motion.p
                     initial={{ opacity: 0, y: -4 }}
@@ -231,7 +215,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
                   </motion.p>
                 )}
 
-                {/* Submit row */}
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                   <button
                     type="button"
@@ -277,7 +260,6 @@ export default function AddAppModal({ isOpen, onClose, onAdd }) {
   );
 }
 
-/* ── Shared style objects ────────────────────────────────── */
 const labelStyle = {
   display: 'block',
   fontSize: '0.75rem',

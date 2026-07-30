@@ -1,9 +1,3 @@
-// StatusGrid.jsx — Responsive grid of StatusCard components
-//
-// Handles three states: loading skeleton, error, data.
-// Separates built-in services from custom (user-added) ones
-// with a visual section divider between them.
-
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusCard from './StatusCard';
 
@@ -15,8 +9,6 @@ export default function StatusGrid({ services, customServices, isLoading, error,
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem 4rem' }}>
-
-      {/* ── Built-in services section ── */}
       <SectionLabel label="Monitored Services" count={services.length} />
       <AnimatedGrid>
         <AnimatePresence>
@@ -26,7 +18,6 @@ export default function StatusGrid({ services, customServices, isLoading, error,
         </AnimatePresence>
       </AnimatedGrid>
 
-      {/* ── Custom applications section ── */}
       {hasCustom && (
         <div style={{ marginTop: '2.5rem' }}>
           <SectionLabel label="Your Applications" count={customServices.length} accent />
@@ -55,7 +46,6 @@ export default function StatusGrid({ services, customServices, isLoading, error,
   );
 }
 
-/* ── Section Label ─────────────────────────────────────────── */
 function SectionLabel({ label, count, accent }) {
   return (
     <div style={{
@@ -88,13 +78,10 @@ function SectionLabel({ label, count, accent }) {
   );
 }
 
-/* ── Animated Grid Wrapper ─────────────────────────────────── */
 function AnimatedGrid({ children }) {
   return (
     <div style={{
       display: 'grid',
-      // Krowd-style: clean 4-column grid that collapses gracefully.
-      // min 260px so cards never get too narrow; max 1fr fills evenly.
       gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
       gap: '1rem',
     }}>
@@ -103,7 +90,6 @@ function AnimatedGrid({ children }) {
   );
 }
 
-/* ── Skeleton loading state ─────────────────────────────────── */
 function SkeletonGrid() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem 4rem' }}>
@@ -163,7 +149,6 @@ function Shimmer({ width, height, radius = '4px' }) {
   );
 }
 
-/* ── Error state ───────────────────────────────────────────── */
 function ErrorState({ message }) {
   return (
     <motion.div
