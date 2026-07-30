@@ -8,9 +8,7 @@ If you are reading this as a recruiter or a hiring manager, the short version is
 
 ## Architecture Diagram
 
-<p align="center">
-  <!-- Architecture diagram goes here -->
-</p>
+<img width="1693" height="929" alt="arch" src="https://github.com/user-attachments/assets/0938f46d-92a4-42ee-9477-771952c9ae1e" />
 
 <br>
 
