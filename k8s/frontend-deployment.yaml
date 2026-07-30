@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: riamtech/pulsecheck-frontend:35
+          image: riamtech/pulsecheck-frontend:37
           ports:
             - containerPort: 80
           resources:
