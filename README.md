@@ -27,6 +27,7 @@ If you are reading this as a recruiter or a hiring manager, the short version is
 - [Kubernetes Deployment](#kubernetes-deployment)
 - [GitOps and Continuous Delivery (ArgoCD)](#gitops-and-continuous-delivery-argocd)
 - [Monitoring](#monitoring)
+- [Project Evidence and Screenshots](#project-evidence-and-screenshots)
 - [The Full Workflow, End to End](#the-full-workflow-end-to-end)
 - [Setup Instructions](#setup-instructions)
 - [Cost Considerations](#cost-considerations)
@@ -257,6 +258,98 @@ This is the part of the pipeline that turns Jenkins's final commit (the image ta
 Prometheus and Grafana are installed inside the cluster using the community Helm chart, rather than on a separate standalone monitoring server. A ServiceMonitor resource tells Prometheus how to scrape metrics from the running pods, and Grafana is configured with Prometheus as its data source for visualizing them.
 
 Metrics worth watching for a workload like this include request latency and error rate on the backend, pod CPU and memory usage against the configured requests and limits, and HPA scaling events, since those directly show the autoscaling behavior actually working rather than just being configured.
+
+
+<br>
+
+## Project Evidence and Screenshots
+
+The screenshots below are from the actual project setup and deployment work. They are included so the implementation can be reviewed beyond the architecture diagram and configuration files. Each image is numbered in the same order as the evidence document.
+
+### Grafana Home
+
+The Grafana interface used during the project. The monitoring setup is part of the wider environment used to observe the deployed application.
+
+![Image 1: Grafana home](docs/images/image-01.png)
+
+### PulseCheck Live Service Health Dashboard
+
+The PulseCheck frontend showing the service-status cards and response-time information. This is the application being built and deployed by the pipeline.
+
+![Image 2: PulseCheck live service health dashboard](docs/images/image-02.png)
+
+### Terraform Apply Output
+
+The terminal output shows Terraform reporting that the infrastructure matches the configuration, followed by the cluster details and endpoint output.
+
+![Image 3: Terraform apply output](docs/images/image-03.png)
+
+### SonarQube Project Overview
+
+The SonarQube project view used to review the project's quality and security analysis results.
+
+![Image 4: SonarQube project overview](docs/images/image-04.png)
+
+### SonarQube Project Results
+
+A second view of the SonarQube project results, included to show the analysis dashboard captured during the project work.
+
+![Image 5: SonarQube project results](docs/images/image-05.png)
+
+### Container Registry
+
+The Docker Hub repositories view for the project's container images.
+
+![Image 6: Docker Hub repositories](docs/images/image-06.png)
+
+### Pipeline Stage Results
+
+The pipeline timing and stage view showing the different build and checking steps, including code quality and dependency checks.
+
+![Image 7: Pipeline stage results](docs/images/image-07.png)
+
+### Argo CD Application
+
+The Argo CD application view showing the application resource tree and its synchronization and health status.
+
+![Image 8: Argo CD application](docs/images/image-08.png)
+
+### Kubernetes Pods
+
+The terminal output from `kubectl get pods -n pulsecheck`, showing the frontend and backend pods running in the `pulsecheck` namespace at the time of capture.
+
+![Image 9: Kubernetes pods](docs/images/image-09.png)
+
+### Kubernetes Pods and Horizontal Pod Autoscalers
+
+The terminal output includes pod status and `kubectl get hpa -n pulsecheck`, showing the configured backend and frontend autoscalers and their reported targets.
+
+![Image 10: Kubernetes pods and HPA](docs/images/image-10.png)
+
+### Grafana Resource Metrics
+
+A Grafana dashboard view showing cluster or workload resource metrics, including memory and CPU-related panels.
+
+![Image 11: Grafana resource metrics](docs/images/image-11.png)
+
+### Grafana Network Metrics
+
+A Grafana dashboard view showing network traffic and related workload metrics.
+
+![Image 12: Grafana network metrics](docs/images/image-12.png)
+
+### Pipeline Configuration in the Repository
+
+A code review view showing changes to project configuration in the repository. This is included as supporting evidence of the configuration work.
+
+![Image 13: Repository configuration changes](docs/images/image-13.png)
+
+### Pipeline Configuration
+
+A code editor view showing the pipeline configuration used in the project.
+
+![Image 14: Pipeline configuration](docs/images/image-14.png)
+
 
 <br>
 
